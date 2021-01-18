@@ -29,7 +29,7 @@ namespace simple{
     const std::string value() const;
   } ;
 
-  std::deque<Token> lexer(const std::string& toTokens);
+  std::deque<Token*> lexer(const std::string& toTokens);
 }
 
 #endif

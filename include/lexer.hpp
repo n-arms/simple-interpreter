@@ -8,7 +8,7 @@
 #include <deque>
 
 namespace simple{
-  std::string Token::lowercase_ = "abcdefghijklmnopqrstuvwxyz";
+  std::string Token::lowercase_ = "abcdefghijklmnopqrstuvwxyz_";
   std::string Token::capital_ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   char Token::colon_ = ':';
   char Token::quote_ = '"';
@@ -21,6 +21,7 @@ namespace simple{
   }
 
   void Token::operator<<(char c){
+    if (c != ' ')
     value_.push_back(c);
     if (value_.size()==1)
     type_ = new tokenType(getType(c));
@@ -56,7 +57,7 @@ namespace simple{
   }
 
   bool Token::matchType(const char& c) const{
-    if (c==' ')
+    if (c==' ' || (*type_)==op || (*type_)==quote || (*type_)==index)
     return false;
     if ((*type_)==none)
     return true;
@@ -74,6 +75,20 @@ namespace simple{
 
   const std::string Token::value() const{
     return std::string(value_.begin(), value_.end());
+  }
+
+  std::deque<Token*> lexer(const std::string& toTokens){
+    std::deque<Token*> tokens;
+    tokens.push_back(new Token());
+    for (int i = 0; i<toTokens.size(); i++){
+      if (tokens.back()->matchType(toTokens[i])){
+        (*tokens.back())<<toTokens[i];
+      }else{
+        tokens.push_back(new Token());
+        (*tokens.back())<<toTokens[i];
+      }
+    }
+    return tokens;
   }
 
 }
