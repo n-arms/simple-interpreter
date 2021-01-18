@@ -6,18 +6,27 @@
 #include <vector>
 
 namespace simple{
-  enum tokenType;
+  enum tokenType {op, number, name, key, colon, quote, index, none};
   class Token{
   private:
-    tokenType type_;
+    tokenType* type_;
     std::vector<char> value_;
+    static std::string lowercase_;
+    static std::string digit_;
+    static std::string capital_;
+    static char colon_;
+    static char quote_;
+    static std::string bracket_;
+    static std::string operator_;
+
   public:
-    void opperator<<(char c);
+    Token();
+    void operator<<(char c);
     static tokenType getType(const char& c);
     bool matchType(const char& c) const;
     void print() const;
-    const type_& type() const;
-    const string value() const;
+    const tokenType type() const;
+    const std::string value() const;
   } ;
 
   std::deque<Token> lexer(const std::string& toTokens);
