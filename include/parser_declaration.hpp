@@ -72,6 +72,48 @@ namespace simple{
     const std::vector<Expression>& arguments() const;
   } ;
 
+  class Expression{
+  public:
+    virtual void print() const = 0;
+    virtual Literal eval() const = 0;
+  } ;
+
+  class BinaryOperator : public Expression{
+  protected:
+    Expression* left_;
+    Expression* right_;
+    std::string op_;
+  public:
+    BinaryOperator(Expression* left, Expression* right, std::string op);
+    void print() const override;
+    Literal eval() const override;
+  } ;
+
+  class Literal : public Expression{
+  protected:
+    VarValue* value_;
+    unsigned long long size_;
+    VarType type_;
+  public:
+    Literal(std::vector<VarValue> value, VarType type);
+    void print() const override;
+    Literal eval() const override;
+    Literal applyOp(std::string op, Literal other) const;
+    std::vector<double> realValue() const;
+    std::vector<long> intValue() const;
+    std::vector<char> charValue() const;
+  } ;
+
+  class Variable : public Expression{
+  protected:
+    std::string varName_;
+  public:
+    Variable(std::string varName);
+    void print() const override;
+    Literal eval() const override;
+    std::string name() const;
+  } ;
+
   std::vector<Line> parse(std::deque<Token*> tokens);
 }
 
