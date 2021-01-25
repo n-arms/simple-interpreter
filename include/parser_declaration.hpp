@@ -7,17 +7,17 @@
 #include <string>
 
 namespace simple{
-  class Line;
-  class Call;
-  class Declaration;
-  class Definition;
+  class Line;//declared
+  class Call;//declared
+  class Declaration;//declared
+  class Definition;//declared
 
-  class Expression;
-  class Literal;
-  class BinOp;
-  class Variable;
+  class Expression;//declared
+  class Literal;//declared
+  class BinOp;//declared
+  class Variable;//declared
 
-  union VarValue;
+  union VarValue;//declared
 
   enum CallType {gotoCall, tagCall, returnCall, forCall, ifCall, writeCall, readCall} ;
   enum VarType {intVar, realVar, charVar, intArr, realArr, charArr} ;
@@ -112,6 +112,12 @@ namespace simple{
     void print() const override;
     Literal eval() const override;
     std::string name() const;
+  } ;
+
+  union VarValue{
+    int* integerValue;
+    double* realValue;
+    char* charValue;
   } ;
 
   std::vector<Line> parse(std::deque<Token*> tokens);
