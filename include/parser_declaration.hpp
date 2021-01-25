@@ -22,86 +22,91 @@ namespace simple{
   enum CallType {gotoCall, tagCall, returnCall, forCall, ifCall, writeCall, readCall} ;
   enum VarType {intVar, realVar, charVar, intArr, realArr, charArr} ;
   enum LineType {lineCall, definitionCall, declarationCall} ;
+  enum ExpressionType {literalExpr, binOpExpr, varExpr} ;
+  enum OperationType {add, sub, mul, div, pow, acc} ;
 
   class Line{
   public:
     virtual void print() const = 0;
-    virtual const LineType& lineType() const = 0;
+    virtual const simple::LineType& lineType() const = 0;
   } ;
 
   class Declaration : public Line{
   protected:
     std::string name_;
-    VarType type_;
+    simple::VarType type_;
     unsigned long long length_;
   public:
-    Declaration(VarType var, std::string name, unsigned long long length = 1);
+    Declaration(simple::VarType var, std::string name, unsigned long long length = 1);
     ~Declaration();
-    const LineType& lineType() const override;
+    const simple::LineType& lineType() const override;
     void print() const override;
     const std::string& name() const;
-    const VarType& type() const;
+    const simple::VarType& type() const;
     const unsigned long long& length() const;
 
   } ;
 
   class Definition : public Line{
   protected:
-    std::vector<Expression> value_;
+    std::vector<simple::Expression> value_;
     std::string name_;
   public:
-    Definition(std::vector<Expression> value, std::string name);
+    Definition(std::vector<simple::Expression> value, std::string name);
     ~Definition();
-    const LineType& lineType() const override;
+    const simple::LineType& lineType() const override;
     void print() const override;
     const std::string& name() const;
-    const std::vector<Expression>& value() const;
+    const std::vector<simple::Expression>& value() const;
     const unsigned long long length() const;
   } ;
 
   class Call : public Line{
   protected:
-    CallType type_;
+    simple::CallType type_;
     std::vector<Expression> arguments_;
   public:
-    Call(CallType type, std::vector<Expression> arguments);
+    Call(simple::CallType type, std::vector<simple::Expression> arguments);
     ~Call();
-    const LineType& lineType() const override;
+    const simple::LineType& lineType() const override;
     void print() const override;
-    const CallType& type() const;
-    const std::vector<Expression>& arguments() const;
+    const simple::CallType& type() const;
+    const std::vector<simple::Expression>& arguments() const;
   } ;
 
   class Expression{
   public:
     virtual void print() const = 0;
-    virtual Literal eval() const = 0;
+    virtual simple::Literal* eval() = 0;
+    virtual simple::ExpressionType exprType() const = 0;
   } ;
 
   class BinaryOperator : public Expression{
   protected:
-    Expression* left_;
-    Expression* right_;
-    std::string op_;
+    simple::Expression* left_ = NULL;
+    simple::Expression* right_ = NULL;
+    simple::OperationType op_;
   public:
-    BinaryOperator(Expression* left, Expression* right, std::string op);
+    BinaryOperator(simple::Expression* left, simple::Expression* right, simple::OperationType op);
     void print() const override;
-    Literal eval() const override;
+    simple::Literal* eval() override;
+    simple::ExpressionType exprType() const override;
   } ;
 
   class Literal : public Expression{
   protected:
-    VarValue* value_;
+    simple::VarValue* value_;
     unsigned long long size_;
-    VarType type_;
+    simple::VarType type_;
   public:
     Literal(std::vector<VarValue> value, VarType type);
     void print() const override;
-    Literal eval() const override;
-    Literal applyOp(std::string op, Literal other) const;
+    simple::Literal* eval() override;
+    simple::Literal applyOp(std::string op, simple::Literal other) const;
     std::vector<double> realValue() const;
     std::vector<long> intValue() const;
     std::vector<char> charValue() const;
+    simple::ExpressionType exprType() const override;
   } ;
 
   class Variable : public Expression{
@@ -110,8 +115,9 @@ namespace simple{
   public:
     Variable(std::string varName);
     void print() const override;
-    Literal eval() const override;
+    simple::Literal* eval() override;
     std::string name() const;
+    simple::ExpressionType exprType() const override;
   } ;
 
   union VarValue{
@@ -120,7 +126,7 @@ namespace simple{
     char* charValue;
   } ;
 
-  std::vector<Line> parse(std::deque<Token*> tokens);
+  std::vector<simple::Line> parse(std::deque<simple::Token*> tokens);
 }
 
 #endif
