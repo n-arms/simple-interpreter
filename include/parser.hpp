@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <cmath>
 #include "parser_declaration.hpp"
 
 namespace simple{
@@ -168,7 +169,21 @@ namespace simple{
       }
       break;
       case pow:
-      throw 0;
+      switch (type_){
+        case intVar:
+        for (int i = 0; i<size_; i++){
+          value_[i].integerValue = std::pow(value_[i].integerValue, other->intValue()[i]);
+        }
+        break;
+        case realVar:
+        for (int i = 0; i<size_; i++){
+          value_[i].realValue = std::pow(value_[i].integerValue, other->realValue()[i]);
+        }
+        break;
+        case charVar:
+        throw 0;
+      }
+      break;
       case acc:
       switch (type_){
         case intVar:
