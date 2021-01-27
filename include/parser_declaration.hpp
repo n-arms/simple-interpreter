@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <utility>
 
 namespace simple{
   class Line;//declared
@@ -93,6 +94,8 @@ namespace simple{
     virtual void print() const = 0;
     virtual simple::Expression* eval() = 0;
     virtual simple::ExpressionType exprType() const = 0;
+    virtual std::vector<std::string> undefined() const = 0;
+    virtual Expression* define(std::vector<std::pair<std::string, simple::Literal*>> values) = 0;
   } ;
 
   class BinaryOperator : public Expression{
@@ -105,6 +108,8 @@ namespace simple{
     void print() const override;
     simple::Expression* eval() override;
     simple::ExpressionType exprType() const override;
+    std::vector<std::string> undefined() const override;
+    Expression* define(std::vector<std::pair<std::string, Literal*>> values) override;
   } ;
 
   class Literal : public Expression{
@@ -122,6 +127,8 @@ namespace simple{
     std::vector<char> charValue() const;
     simple::ExpressionType exprType() const override;
     unsigned long long size() const;
+    std::vector<std::string> undefined() const override;
+    Expression* define(std::vector<std::pair<std::string, Literal*>> values) override;
   } ;
 
   class Variable : public Expression{
@@ -133,6 +140,8 @@ namespace simple{
     simple::Expression* eval() override;
     std::string name() const;
     simple::ExpressionType exprType() const override;
+    std::vector<std::string> undefined() const override;
+    Expression* define(std::vector<std::pair<std::string, Literal*>> values) override;
   } ;
 
 

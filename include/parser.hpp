@@ -6,9 +6,14 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <utility>
 #include "parser_declaration.hpp"
 
 namespace simple{
+  /*##################################################################################
+  Binary Operator
+  #####################################################################################
+  */
   simple::BinaryOperator::BinaryOperator(simple::Expression* left, simple::Expression* right, simple::OperationType op)
   {
     left_ = left;
@@ -59,6 +64,24 @@ namespace simple{
   simple::ExpressionType simple::BinaryOperator::exprType() const{
     return simple::ExpressionType::binOpExpr;
   }
+
+  std::vector<std::string> simple::BinaryOperator::undefined() const{
+    std::vector<std::string> a = left_->undefined();
+    std::vector<std::string> b = right_->undefined();
+    a.insert(a.end(), b.begin(), b.end());
+    return a;
+  }
+
+  Expression* simple::BinaryOperator::define(std::vector<std::pair<std::string, simple::Literal*>> values){
+    left_ = left_->define(values);
+    right_ = right_->define(values);
+    return this;
+  }
+
+/*##################################################################################
+Literal
+#####################################################################################
+*/
 
   simple::Literal::Literal(std::vector<VarValue> value, VarType type){
     type_ = type;
@@ -230,6 +253,14 @@ namespace simple{
     return size_;
   }
 
+  std::vector<std::string> simple::Literal::undefined() const{
+    return {};
+  }
+
+  Expression* simple::Literal::define(std::vector<std::pair<std::string, simple::Literal*>> values){
+    return this;
+  }
+
   simple::Variable::Variable(std::string varName){
     varName_ = varName;
   }
@@ -248,6 +279,18 @@ namespace simple{
 
   simple::ExpressionType simple::Variable::exprType() const{
     return simple::ExpressionType::varExpr;
+  }
+
+  std::vector<std::string> simple::Variable::undefined() const{
+    return {varName_};
+  }
+
+  Expression* simple::Variable::define(std::vector<std::pair<std::string, simple::Literal*>> values){
+    for (std::pair<std::string, simple::Literal*> p: values){
+      if (std::get<0>(p)==varName_)
+      return std::get<1>(p);
+    }
+    return this;
   }
 
 
