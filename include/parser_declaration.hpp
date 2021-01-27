@@ -17,10 +17,14 @@ namespace simple{
   class BinOp;//declared
   class Variable;//declared
 
-  union VarValue;//declared
+  union VarValue{
+    int integerValue;
+    double realValue;
+    char charValue;
+  } ;
 
   enum CallType {gotoCall, tagCall, returnCall, forCall, ifCall, writeCall, readCall} ;
-  enum VarType {intVar, realVar, charVar, intArr, realArr, charArr} ;
+  enum VarType {intVar, realVar, charVar} ;
   enum LineType {lineCall, definitionCall, declarationCall} ;
   enum ExpressionType {literalExpr, binOpExpr, varExpr} ;
   enum OperationType {add, sub, mul, div, pow, acc} ;
@@ -77,7 +81,7 @@ namespace simple{
   class Expression{
   public:
     virtual void print() const = 0;
-    virtual simple::Literal* eval() = 0;
+    virtual simple::Expression* eval() = 0;
     virtual simple::ExpressionType exprType() const = 0;
   } ;
 
@@ -89,7 +93,7 @@ namespace simple{
   public:
     BinaryOperator(simple::Expression* left, simple::Expression* right, simple::OperationType op);
     void print() const override;
-    simple::Literal* eval() override;
+    simple::Expression* eval() override;
     simple::ExpressionType exprType() const override;
   } ;
 
@@ -101,12 +105,13 @@ namespace simple{
   public:
     Literal(std::vector<VarValue> value, VarType type);
     void print() const override;
-    simple::Literal* eval() override;
-    simple::Literal applyOp(std::string op, simple::Literal other) const;
+    simple::Expression* eval() override;
+    simple::Literal* applyOp(simple::OperationType op, simple::Literal* other);
     std::vector<double> realValue() const;
-    std::vector<long> intValue() const;
+    std::vector<int> intValue() const;
     std::vector<char> charValue() const;
     simple::ExpressionType exprType() const override;
+    unsigned long long size() const;
   } ;
 
   class Variable : public Expression{
@@ -115,16 +120,12 @@ namespace simple{
   public:
     Variable(std::string varName);
     void print() const override;
-    simple::Literal* eval() override;
+    simple::Expression* eval() override;
     std::string name() const;
     simple::ExpressionType exprType() const override;
   } ;
 
-  union VarValue{
-    int* integerValue;
-    double* realValue;
-    char* charValue;
-  } ;
+
 
   std::vector<simple::Line> parse(std::deque<simple::Token*> tokens);
 }
