@@ -21,6 +21,16 @@ namespace simple{
     int integerValue;
     double realValue;
     char charValue;
+    VarValue(){}
+    VarValue(int val){
+      integerValue = val;
+    }
+    VarValue(double val){
+      realValue = val;
+    }
+    VarValue(char val){
+      charValue = val;
+    }
   } ;
 
   enum CallType {gotoCall, tagCall, returnCall, forCall, ifCall, writeCall, readCall} ;
@@ -106,7 +116,7 @@ namespace simple{
     Literal(std::vector<VarValue> value, VarType type);
     void print() const override;
     simple::Expression* eval() override;
-    simple::Literal* applyOp(simple::OperationType op, simple::Literal* other);
+    simple::Literal* applyOp(simple::Literal* other, simple::OperationType op);
     std::vector<double> realValue() const;
     std::vector<int> intValue() const;
     std::vector<char> charValue() const;
