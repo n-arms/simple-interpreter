@@ -261,6 +261,11 @@ Literal
     return this;
   }
 
+  /*##################################################################################
+  Variable
+  #####################################################################################
+  */
+
   simple::Variable::Variable(std::string varName){
     varName_ = varName;
   }
@@ -291,6 +296,49 @@ Literal
       return std::get<1>(p);
     }
     return this;
+  }
+
+  /*##################################################################################
+  Declaration
+  #####################################################################################
+  */
+  simple::Declaration::Declaration(simple::VarType var, std::string name, unsigned long long length){
+    name_ = name;
+    type_ = var;
+    length_ = length;
+  }
+
+  void simple::Declaration::print() const{
+    switch(type_){
+      case intVar:
+      std::cout << "INT::";
+      break;
+      case charVar:
+      std::cout << "CHAR::";
+      break;
+      case realVar:
+      std::cout << "REAL::";
+      break;
+    }
+    if (length_ > 1)
+    std::cout << length_<<"::";
+    std::cout << name_<<"\n";
+  }
+
+  const std::string& simple::Declaration::name() const{
+    return name_;
+  }
+
+  const simple::VarType& simple::Declaration::type() const{
+    return type_;
+  }
+
+  const unsigned long long& simple::Declaration::length() const{
+    return length_;
+  }
+
+  const simple::LineType simple::Declaration::lineType() const{
+    return declarationCall;
   }
 
 

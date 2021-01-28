@@ -43,7 +43,7 @@ namespace simple{
   class Line{
   public:
     virtual void print() const = 0;
-    virtual const simple::LineType& lineType() const = 0;
+    virtual const simple::LineType lineType() const = 0;
   } ;
 
   class Declaration : public Line{
@@ -53,8 +53,7 @@ namespace simple{
     unsigned long long length_;
   public:
     Declaration(simple::VarType var, std::string name, unsigned long long length = 1);
-    ~Declaration();
-    const simple::LineType& lineType() const override;
+    const simple::LineType lineType() const override;
     void print() const override;
     const std::string& name() const;
     const simple::VarType& type() const;
@@ -69,7 +68,7 @@ namespace simple{
   public:
     Definition(std::vector<simple::Expression> value, std::string name);
     ~Definition();
-    const simple::LineType& lineType() const override;
+    const simple::LineType lineType() const override;
     void print() const override;
     const std::string& name() const;
     const std::vector<simple::Expression>& value() const;
@@ -83,7 +82,7 @@ namespace simple{
   public:
     Call(simple::CallType type, std::vector<simple::Expression> arguments);
     ~Call();
-    const simple::LineType& lineType() const override;
+    const simple::LineType lineType() const override;
     void print() const override;
     const simple::CallType& type() const;
     const std::vector<simple::Expression>& arguments() const;
@@ -143,8 +142,6 @@ namespace simple{
     std::vector<std::string> undefined() const override;
     Expression* define(std::vector<std::pair<std::string, Literal*>> values) override;
   } ;
-
-
 
   std::vector<simple::Line> parse(std::deque<simple::Token*> tokens);
 }
