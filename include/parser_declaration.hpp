@@ -77,14 +77,13 @@ namespace simple{
   class Call : public Line{
   protected:
     simple::CallType type_;
-    std::vector<Expression> arguments_;
+    std::vector<Expression*> arguments_;
   public:
-    Call(simple::CallType type, std::vector<simple::Expression> arguments);
-    ~Call();
+    Call(simple::CallType type, std::vector<simple::Expression*> arguments);
     const simple::LineType lineType() const override;
     void print() const override;
     const simple::CallType& type() const;
-    const std::vector<simple::Expression>& arguments() const;
+    const std::vector<simple::Expression*>& arguments() const;
   } ;
 
   class Expression{

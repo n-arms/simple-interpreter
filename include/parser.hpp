@@ -358,6 +358,11 @@ Literal
     return declarationCall;
   }
 
+  /*##################################################################################
+  Definition
+  #####################################################################################
+  */
+
   simple::Definition::Definition(std::vector<simple::Expression*> value, std::string name){
     value_ = value;
     name_ = name;
@@ -388,7 +393,58 @@ Literal
     return value_.size();
   }
 
+  /*##################################################################################
+  Call
+  #####################################################################################
+  */
 
+  simple::Call::Call(simple::CallType type, std::vector<simple::Expression*> arguments){
+    type_ = type;
+    arguments_ = arguments;
+  }
+
+  const simple::LineType simple::Call::lineType() const{
+    return lineCall;
+  }
+
+  void simple::Call::print() const{
+    switch(type_){
+      case gotoCall:
+      std::cout << "GOTO ";
+      break;
+      case tagCall:
+      std::cout << "TAG ";
+      break;
+      case returnCall:
+      std::cout << "RETURN ";
+      break;
+      case forCall:
+      std::cout << "FOR ";
+      break;
+      case ifCall:
+      std::cout << "IF ";
+      break;
+      case writeCall:
+      std::cout << "WRITE ";
+      break;
+      case readCall:
+      std::cout << "READ ";
+      break;
+    }
+    for (Expression* e: arguments_){
+      e->print();
+      std::cout << " ";
+    }
+    std::cout << "\n";
+  }
+
+  const simple::CallType& simple::Call::type() const{
+    return type_;
+  }
+
+  const std::vector<simple::Expression*>& simple::Call::arguments() const{
+    return arguments_;
+  }
 
 
 }
