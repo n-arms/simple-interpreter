@@ -63,15 +63,14 @@ namespace simple{
 
   class Definition : public Line{
   protected:
-    std::vector<simple::Expression> value_;
+    std::vector<simple::Expression*> value_;
     std::string name_;
   public:
-    Definition(std::vector<simple::Expression> value, std::string name);
-    ~Definition();
+    Definition(std::vector<simple::Expression*> value, std::string name);
     const simple::LineType lineType() const override;
     void print() const override;
     const std::string& name() const;
-    const std::vector<simple::Expression>& value() const;
+    const std::vector<simple::Expression*>& value() const;
     const unsigned long long length() const;
   } ;
 
@@ -95,6 +94,7 @@ namespace simple{
     virtual simple::ExpressionType exprType() const = 0;
     virtual std::vector<std::string> undefined() const = 0;
     virtual Expression* define(std::vector<std::pair<std::string, simple::Literal*>> values) = 0;
+    virtual ~Expression() = 0;
   } ;
 
   class BinaryOperator : public Expression{
@@ -104,6 +104,7 @@ namespace simple{
     simple::OperationType op_;
   public:
     BinaryOperator(simple::Expression* left, simple::Expression* right, simple::OperationType op);
+    ~BinaryOperator() override;
     void print() const override;
     simple::Expression* eval() override;
     simple::ExpressionType exprType() const override;
@@ -118,6 +119,7 @@ namespace simple{
     simple::VarType type_;
   public:
     Literal(std::vector<VarValue> value, VarType type);
+    ~Literal() override;
     void print() const override;
     simple::Expression* eval() override;
     simple::Literal* applyOp(simple::Literal* other, simple::OperationType op);
@@ -135,6 +137,7 @@ namespace simple{
     std::string varName_;
   public:
     Variable(std::string varName);
+    ~Variable() override;
     void print() const override;
     simple::Expression* eval() override;
     std::string name() const;

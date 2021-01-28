@@ -10,6 +10,9 @@
 #include "parser_declaration.hpp"
 
 namespace simple{
+  simple::Expression::~Expression(){}
+
+
   /*##################################################################################
   Binary Operator
   #####################################################################################
@@ -19,6 +22,14 @@ namespace simple{
     left_ = left;
     right_ = right;
     op_ = op;
+  }
+
+  simple::BinaryOperator::~BinaryOperator(){
+    if (left_ != NULL)
+    delete left_;
+
+    if (right_ != NULL)
+    delete right_;
   }
 
   void simple::BinaryOperator::print() const{
@@ -98,6 +109,10 @@ Literal
       for (int i = 0; i<size_; i++)
       value_[i].charValue = value[i].charValue;
     }
+  }
+
+  simple::Literal::~Literal(){
+    delete value_;
   }
 
   void simple::Literal::print() const{
@@ -270,6 +285,8 @@ Literal
     varName_ = varName;
   }
 
+  simple::Variable::~Variable(){}
+
   void simple::Variable::print() const{
     std::cout << varName_;
   }
@@ -340,6 +357,38 @@ Literal
   const simple::LineType simple::Declaration::lineType() const{
     return declarationCall;
   }
+
+  simple::Definition::Definition(std::vector<simple::Expression*> value, std::string name){
+    value_ = value;
+    name_ = name;
+  }
+
+  const simple::LineType simple::Definition::lineType() const{
+    return definitionCall;
+  }
+
+  void simple::Definition::print() const{
+    std::cout << name_ << " = ";
+    for (Expression* e: value_){
+      e->print();
+      std::cout << " ";
+    }
+    std::cout << "\n";
+  }
+
+  const std::string& simple::Definition::name() const{
+    return name_;
+  }
+
+  const std::vector<simple::Expression*>& simple::Definition::value() const{
+    return value_;
+  }
+
+  const unsigned long long simple::Definition::length() const{
+    return value_.size();
+  }
+
+
 
 
 }
