@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include <utility>
+#include <map>
 
 namespace simple{
   class Line;//declared
@@ -146,6 +147,21 @@ namespace simple{
   } ;
 
   std::vector<simple::Line> parse(std::deque<simple::Token*> tokens);
+
+  class Evaluator{
+  protected:
+    std::map<std::string, std::vector<simple::Expression*>> variables_;
+    std::deque<unsigned long long> indeces_;
+    std::ostream& io_;
+
+    static const unsigned long long entryPoint_;
+
+    void evaluateLine();
+  public:
+    Evaluator(std::vector<Line> lines, std::ostream& io);
+    ~Evaluator();
+    void eval();
+  } ;
 }
 
 #endif
