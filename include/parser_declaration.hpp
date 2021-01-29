@@ -45,6 +45,7 @@ namespace simple{
   public:
     virtual void print() const = 0;
     virtual const simple::LineType lineType() const = 0;
+    virtual ~Line() = 0;
   } ;
 
   class Declaration : public Line{
@@ -151,16 +152,21 @@ namespace simple{
   class Evaluator{
   protected:
     std::map<std::string, Expression*> variables_;
-    std::deque<unsigned long long> indeces_;
+    std::deque<unsigned long long> indeces_; //program path, used as stack with pop/push back only
     std::ostream& io_;
+    std::vector<simple::Line*> lines_;
 
     static const unsigned long long entryPoint_;
 
     void evaluateLine();
+    void define(simple::Definition* line);
+    void declare(simple::Declaration* line);
+    void call(simple::Call* line);
   public:
-    Evaluator(std::vector<Line> lines, std::ostream& io);
+    Evaluator(std::vector<simple::Line*> lines, std::ostream& io);
     ~Evaluator();
     void eval();
+    void printEnviroment();
   } ;
 }
 

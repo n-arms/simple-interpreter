@@ -8,6 +8,7 @@
 #include <cmath>
 #include <utility>
 #include "parser_declaration.hpp"
+#include <cassert>
 
 namespace simple{
   simple::Expression::~Expression(){}
@@ -315,10 +316,14 @@ Literal
     return this;
   }
 
+  //###################################################################################
+  simple::Line::~Line(){}
+
   /*##################################################################################
   Declaration
   #####################################################################################
   */
+
   simple::Declaration::Declaration(simple::VarType var, std::string name, unsigned long long length){
     name_ = name;
     type_ = var;
@@ -451,15 +456,70 @@ Literal
   #####################################################################################
   */
   const unsigned long long simple::Evaluator::entryPoint_ = 0;
-  
-  simple::Evaluator::Evaluator(std::vector<Line> lines, std::ostream& io) : io_(io){
+
+  simple::Evaluator::Evaluator(std::vector<simple::Line*> lines, std::ostream& io) : io_(io){
     indeces_.push_back(simple::Evaluator::entryPoint_);
+    lines_ = lines;
   }
 
   simple::Evaluator::~Evaluator(){
     for (std::map<std::string, simple::Expression*>::iterator itr = variables_.begin(); itr != variables_.end(); itr++){
       delete itr->second;
     }
+    for (simple::Line* l: lines_)
+    delete l;
+  }
+
+  void simple::Evaluator::evaluateLine(){
+    simple::Line* current = lines_[indeces_.back()];
+
+    switch(current->lineType()){
+      case lineCall:
+      call(dynamic_cast<Call*>(current));
+      throw "why are you implementing the hardest one first!!?!?!?!?!?!?!!?";
+      break;
+      case definitionCall:
+      define(dynamic_cast<Definition*>(current));
+      break;
+      case declarationCall:
+      declare(dynamic_cast<Declaration*>(current));
+      break;
+    }
+    if(++indeces_.back() >= lines_.size()){
+      indeces_.pop_back();
+    }
+  }
+
+  void simple::Evaluator::define(simple::Definition* line){
+    assert (line != NULL);
+    
+  }
+
+  void simple::Evaluator::declare(simple::Declaration* line){
+    assert (line != NULL);
+    variables_.insert(std::pair<std::string, Expression*>(line->name(), NULL));
+  }
+
+  void simple::Evaluator::call(simple::Call* line){
+    assert (line != NULL);
+    throw "sheesh be patient i havent implemented this yet";
+  }
+
+  void simple::Evaluator::printEnviroment(){
+    for (std::map<std::string, Expression*>::iterator it = variables_.begin(); it != variables_.end(); it++){
+      std::cout << it->first << ": ";
+      if (it->second == NULL){
+        std::cout << "NULL\n";
+      }else{
+        it->second->print();
+      }
+    }
+  }
+}
+
+void simple::Evaluator::eval(){
+  while (indeces_.size() > 0){
+    evaluateLine();
   }
 }
 
