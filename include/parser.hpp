@@ -446,7 +446,21 @@ Literal
     return arguments_;
   }
 
+  /*##################################################################################
+  Evaluator
+  #####################################################################################
+  */
+  const unsigned long long simple::Evaluator::entryPoint_ = 0;
+  
+  simple::Evaluator::Evaluator(std::vector<Line> lines, std::ostream& io) : io_(io){
+    indeces_.push_back(simple::Evaluator::entryPoint_);
+  }
 
+  simple::Evaluator::~Evaluator(){
+    for (std::map<std::string, simple::Expression*>::iterator itr = variables_.begin(); itr != variables_.end(); itr++){
+      delete itr->second;
+    }
+  }
 }
 
 #endif

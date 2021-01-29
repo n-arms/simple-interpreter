@@ -150,7 +150,7 @@ namespace simple{
 
   class Evaluator{
   protected:
-    std::map<std::string, std::vector<simple::Expression*>> variables_;
+    std::map<std::string, Expression*> variables_;
     std::deque<unsigned long long> indeces_;
     std::ostream& io_;
 
