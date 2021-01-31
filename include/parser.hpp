@@ -90,6 +90,15 @@ namespace simple{
     return this;
   }
 
+  Literal* simple::BinaryOperator::forceEval(){
+    Expression* temp = this->eval();
+    if (temp->exprType()==literalExpr){
+      return dynamic_cast<Literal*>(temp);
+    }else{
+      throw 0;
+    }
+  }
+
 /*##################################################################################
 Literal
 #####################################################################################
@@ -277,6 +286,14 @@ Literal
     return this;
   }
 
+  Literal* simple::Literal::forceEval(){
+    return this;
+  }
+
+  simple::VarType simple::Literal::varType() const{
+    return type_;
+  }
+
   /*##################################################################################
   Variable
   #####################################################################################
@@ -314,6 +331,10 @@ Literal
       return std::get<1>(p);
     }
     return this;
+  }
+
+  Literal* simple::Variable::forceEval(){
+    throw 0;
   }
 
   //###################################################################################
@@ -390,7 +411,7 @@ Literal
     return name_;
   }
 
-  const std::vector<simple::Expression*>& simple::Definition::value() const{
+  std::vector<simple::Expression*> simple::Definition::value() const{
     return value_;
   }
 
@@ -463,7 +484,7 @@ Literal
   }
 
   simple::Evaluator::~Evaluator(){
-    for (std::map<std::string, simple::Expression*>::iterator itr = variables_.begin(); itr != variables_.end(); itr++){
+    for (auto itr = variables_.begin(); itr != variables_.end(); itr++){
       delete itr->second;
     }
     for (simple::Line* l: lines_)
@@ -472,6 +493,9 @@ Literal
 
   void simple::Evaluator::evaluateLine(){
     simple::Line* current = lines_[indeces_.back()];
+    std::cout << "evaluating line ";
+    current->print();
+    std::cout << "\n";
 
     switch(current->lineType()){
       case lineCall:
@@ -492,12 +516,62 @@ Literal
 
   void simple::Evaluator::define(simple::Definition* line){
     assert (line != NULL);
-    
+    std::vector<std::pair<std::string, Literal*>> toDefine;
+    std::vector<std::string> undefinedVariables;
+    std::vector<Expression*> expressions = line->value();
+    for (Expression* e: expressions){
+      undefinedVariables = e->undefined();
+      for (std::string s: undefinedVariables){
+        auto itr = variables_.find(s);
+        toDefine.push_back(*itr);
+      }
+      e = e->define(toDefine);
+      e = e->eval();
+      toDefine.clear();
+
+    }
+
+
+    std::vector<VarValue> literalValueList;
+    Literal* l;
+    for (Expression* e: expressions){
+      l = dynamic_cast<Literal*>(e);
+      assert (l != NULL);
+      switch (l->varType()){
+        case intVar:
+        for (auto i: l->intValue()){
+          literalValueList.push_back(VarValue(i));
+        }
+        break;
+        case charVar:
+        for (auto c: l->charValue()){
+          literalValueList.push_back(VarValue(c));
+        }
+        break;
+        case realVar:
+
+        for (auto r: l->realValue()){
+          literalValueList.push_back(VarValue(r));
+        }
+        break;
+
+      }
+    }
+
+    Literal* literalValue = new Literal(literalValueList, l->varType());
+
+    auto itr = variables_.find(line->name());
+
+    if (itr != variables_.end()){
+      itr->second = literalValue;
+    }else{
+      variables_.insert(std::pair<std::string, Literal*>(line->name(), literalValue));
+    }
   }
 
   void simple::Evaluator::declare(simple::Declaration* line){
     assert (line != NULL);
-    variables_.insert(std::pair<std::string, Expression*>(line->name(), NULL));
+    variables_.insert(std::pair<std::string, Literal*>(line->name(), NULL));
   }
 
   void simple::Evaluator::call(simple::Call* line){
@@ -506,12 +580,13 @@ Literal
   }
 
   void simple::Evaluator::printEnviroment(){
-    for (std::map<std::string, Expression*>::iterator it = variables_.begin(); it != variables_.end(); it++){
+    for (std::map<std::string, Literal*>::iterator it = variables_.begin(); it != variables_.end(); it++){
       std::cout << it->first << ": ";
       if (it->second == NULL){
         std::cout << "NULL\n";
       }else{
         it->second->print();
+        std::cout << "\n";
       }
     }
   }

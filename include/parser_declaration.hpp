@@ -72,7 +72,7 @@ namespace simple{
     const simple::LineType lineType() const override;
     void print() const override;
     const std::string& name() const;
-    const std::vector<simple::Expression*>& value() const;
+    std::vector<simple::Expression*> value() const;
     const unsigned long long length() const;
   } ;
 
@@ -96,6 +96,7 @@ namespace simple{
     virtual std::vector<std::string> undefined() const = 0;
     virtual Expression* define(std::vector<std::pair<std::string, simple::Literal*>> values) = 0;
     virtual ~Expression() = 0;
+    virtual Literal* forceEval() = 0;
   } ;
 
   class BinaryOperator : public Expression{
@@ -111,6 +112,7 @@ namespace simple{
     simple::ExpressionType exprType() const override;
     std::vector<std::string> undefined() const override;
     Expression* define(std::vector<std::pair<std::string, Literal*>> values) override;
+    Literal* forceEval() override;
   } ;
 
   class Literal : public Expression{
@@ -131,6 +133,8 @@ namespace simple{
     unsigned long long size() const;
     std::vector<std::string> undefined() const override;
     Expression* define(std::vector<std::pair<std::string, Literal*>> values) override;
+    Literal* forceEval() override;
+    simple::VarType varType() const;
   } ;
 
   class Variable : public Expression{
@@ -145,13 +149,14 @@ namespace simple{
     simple::ExpressionType exprType() const override;
     std::vector<std::string> undefined() const override;
     Expression* define(std::vector<std::pair<std::string, Literal*>> values) override;
+    Literal* forceEval() override;
   } ;
 
   std::vector<simple::Line> parse(std::deque<simple::Token*> tokens);
 
   class Evaluator{
   protected:
-    std::map<std::string, Expression*> variables_;
+    std::map<std::string, Literal*> variables_;
     std::deque<unsigned long long> indeces_; //program path, used as stack with pop/push back only
     std::ostream& io_;
     std::vector<simple::Line*> lines_;
