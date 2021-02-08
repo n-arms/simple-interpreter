@@ -85,7 +85,7 @@ namespace simple{
     const simple::LineType lineType() const override;
     void print() const override;
     const simple::CallType& type() const;
-    const std::vector<simple::Expression*>& arguments() const;
+    std::vector<simple::Expression*> arguments() const;
   } ;
 
   class Expression{

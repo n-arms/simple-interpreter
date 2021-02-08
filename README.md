@@ -1,3 +1,9 @@
+# notice of deprecation
+I bit off more than I could chew with this project, I am archiving it until:
+* I have the c++ skills to finish it
+* I have the motivation to work on it
+
+
 # simple-interpreter
 An interpreter for the language simple, a relatively low level interpreted programming language.
 
@@ -35,4 +41,3 @@ The only conditional is IF, and the only loop is FOR:
 * FOR
     * calls GOTO on a specific tag repeatedly, incrementing a variable each time based off a given start, end, and increment
     * usage: FOR \<integer or real\> \<integer or real\> \<integer or real\> \<tag name\>
-

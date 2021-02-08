@@ -468,7 +468,7 @@ Literal
     return type_;
   }
 
-  const std::vector<simple::Expression*>& simple::Call::arguments() const{
+  std::vector<simple::Expression*> simple::Call::arguments() const{
     return arguments_;
   }
 
@@ -509,6 +509,7 @@ Literal
       declare(dynamic_cast<Declaration*>(current));
       break;
     }
+    std::cout << "past evaluation\n";
     if(++indeces_.back() >= lines_.size()){
       indeces_.pop_back();
     }
@@ -516,49 +517,46 @@ Literal
 
   void simple::Evaluator::define(simple::Definition* line){
     assert (line != NULL);
-    std::vector<std::pair<std::string, Literal*>> toDefine;
+    std::cout << "define call\n";
+    std::vector<std::pair<std::string, simple::Literal*>> dependancies;
     std::vector<std::string> undefinedVariables;
-    std::vector<Expression*> expressions = line->value();
-    for (Expression* e: expressions){
-      undefinedVariables = e->undefined();
-      for (std::string s: undefinedVariables){
-        auto itr = variables_.find(s);
-        toDefine.push_back(*itr);
-      }
-      e = e->define(toDefine);
-      e = e->eval();
-      toDefine.clear();
-
+    std::vector<simple::Expression*> valueList;
+    std::vector<simple::Literal*> literalValueList;
+    std::vector<simple::VarValue> varValueList;
+    std::cout << "declared necessary variables\n";
+    for (Expression* e: valueList){
+      for (std::string s: e->undefined())
+      undefinedVariables.push_back(s);
     }
-
-
-    std::vector<VarValue> literalValueList;
-    Literal* l;
-    for (Expression* e: expressions){
-      l = dynamic_cast<Literal*>(e);
-      assert (l != NULL);
+    std::cout << "compiled undefined variables\n";
+    for (std::string s: undefinedVariables){
+      auto itr = variables_.find(s);
+      if (itr != variables_.end())
+      dependancies.push_back(*itr);
+    }
+    std::cout << "parse dependancies\n";
+    for (Expression* e: valueList){
+      literalValueList.push_back(e->define(dependancies)->forceEval());
+    }
+    std::cout << "evaluated dependancies\n";
+    for (Literal* l: literalValueList){
       switch (l->varType()){
         case intVar:
-        for (auto i: l->intValue()){
-          literalValueList.push_back(VarValue(i));
-        }
-        break;
-        case charVar:
-        for (auto c: l->charValue()){
-          literalValueList.push_back(VarValue(c));
-        }
+        for (int i: l->intValue())
+        varValueList.push_back(VarValue(i));
         break;
         case realVar:
-
-        for (auto r: l->realValue()){
-          literalValueList.push_back(VarValue(r));
-        }
+        for (double d: l->realValue())
+        varValueList.push_back(VarValue(d));
         break;
-
+        case charVar:
+        for (char c: l->charValue())
+        varValueList.push_back(VarValue(c));
       }
     }
 
-    Literal* literalValue = new Literal(literalValueList, l->varType());
+
+    Literal* literalValue = new Literal(varValueList, literalValueList[0]->varType());
 
     auto itr = variables_.find(line->name());
 
@@ -576,7 +574,7 @@ Literal
 
   void simple::Evaluator::call(simple::Call* line){
     assert (line != NULL);
-    throw "sheesh be patient i havent implemented this yet";
+
   }
 
   void simple::Evaluator::printEnviroment(){
